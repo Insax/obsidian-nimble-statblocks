@@ -1,4 +1,5 @@
 export type MonsterLayout = "normal" | "solo" | "flunky" | "minion" | "legendary";
+export type ItemRarity = "uncommon" | "rare" | "very rare" | "legendary" | "mythical";
 export type MonsterSize = string;
 
 export interface SpeedEntry {
@@ -82,11 +83,30 @@ export interface MonsterStatblock {
 	bloodiedState?: SoloPhaseState;
 }
 
+export interface ItemEntry {
+	name: string;
+	desc: AbilityDescLine[];
+}
+
+export interface ItemStatblock {
+	name: string;
+	layout: "item";
+	rarity: ItemRarity;
+	itemType: string;
+	requirements?: string;
+	price?: string;
+	image?: string;
+	flavor?: string;
+	entries: ItemEntry[];
+}
+
+export type Statblock = MonsterStatblock | ItemStatblock;
+
 export interface ParseError {
 	message: string;
 }
 
 export interface ParseResult {
-	statblock?: MonsterStatblock;
+	statblock?: Statblock;
 	error?: ParseError;
 }

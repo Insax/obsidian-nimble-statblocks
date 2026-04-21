@@ -7,6 +7,9 @@ import type {
 	ActionMode,
 	ActionSaveEntry,
 	ActionTriggerEffect,
+	ItemEntry,
+	ItemRarity,
+	ItemStatblock,
 	MonsterLayout,
 	MonsterStatblock,
 	ParseResult,
@@ -20,6 +23,8 @@ import type {
 const DEFAULT_LAYOUT: MonsterLayout = "normal";
 const DEFAULT_LEVEL = "1";
 const DEFAULT_SIZE = "medium";
+
+const VALID_RARITIES: ItemRarity[] = ["uncommon", "rare", "very rare", "legendary", "mythical"];
 
 export function parseNimbleBlock(source: string): ParseResult {
 	let parsedSource: unknown;
@@ -38,6 +43,12 @@ export function parseNimbleBlock(source: string): ParseResult {
 		};
 	}
 
+	const layout = parseLayout(parsedSource.layout);
+
+	if (layout === "item") {
+		return parseItemBlock(parsedSource);
+	}
+
 	const name = asTrimmedString(parsedSource.name);
 	if (!name) {
 		return {
@@ -45,7 +56,6 @@ export function parseNimbleBlock(source: string): ParseResult {
 		};
 	}
 
-	const layout = parseLayout(parsedSource.layout);
 	const level = normalizeLevelDisplay(asDisplayValue(parsedSource.level, DEFAULT_LEVEL));
 	const size = asDisplayValue(parsedSource.size, DEFAULT_SIZE).toLowerCase();
 	const archetype = asOptionalString(
@@ -159,7 +169,7 @@ export function parseNimbleBlock(source: string): ParseResult {
 	return { statblock };
 }
 
-function parseLayout(value: unknown): MonsterLayout {
+function parseLayout(value: unknown): MonsterLayout | "item" {
 	if (typeof value !== "string") {
 		return DEFAULT_LAYOUT;
 	}
@@ -170,12 +180,96 @@ function parseLayout(value: unknown): MonsterLayout {
 		normalized === "normal" ||
 		normalized === "flunky" ||
 		normalized === "minion" ||
-		normalized === "legendary"
+		normalized === "legendary" ||
+		normalized === "item"
 	) {
 		return normalized;
 	}
 
 	return DEFAULT_LAYOUT;
+}
+
+function parseItemBlock(source: Record<string, unknown>): ParseResult {
+	const name = asTrimmedString(source.name);
+	if (!name) {
+		return { error: { message: "Field 'name' is required for item." } };
+	}
+
+	const rarity = parseRarity(source.rarity);
+	const itemType = asOptionalString(
+		source.type ?? source.item_type ?? source.itemType ?? "Unknown",
+	) ?? "Unknown";
+	const requirements = asOptionalString(
+		source.requirements ?? source.requirement ?? source.requires,
+	);
+	const price = asOptionalString(source.price ?? source.cost);
+	const image = asOptionalLinkString(source.image);
+	const flavor = asOptionalString(source.flavor ?? source.flavor_text ?? source.flavorText);
+	const entries = parseItemEntries(source.entries ?? source.effects ?? source.abilities);
+
+	const itemStatblock: ItemStatblock = {
+		name,
+		layout: "item",
+		rarity,
+		itemType,
+		entries,
+	};
+
+	if (requirements) {
+		itemStatblock.requirements = requirements;
+	}
+	if (price) {
+		itemStatblock.price = price;
+	}
+	if (image) {
+		itemStatblock.image = image;
+	}
+	if (flavor) {
+		itemStatblock.flavor = flavor;
+	}
+
+	return { statblock: itemStatblock };
+}
+
+function parseRarity(value: unknown): ItemRarity {
+	if (typeof value !== "string") {
+		return "uncommon";
+	}
+
+	const normalized = value.trim().toLowerCase();
+	if (VALID_RARITIES.includes(normalized as ItemRarity)) {
+		return normalized as ItemRarity;
+	}
+
+	return "uncommon";
+}
+
+function parseItemEntries(value: unknown): ItemEntry[] {
+	if (!Array.isArray(value)) {
+		return [];
+	}
+
+	const entries: ItemEntry[] = [];
+	for (const item of value) {
+		if (!isRecord(item)) {
+			continue;
+		}
+
+		const name = asTrimmedString(item.name ?? item.effect ?? item.ability);
+		if (!name) {
+			continue;
+		}
+
+		const descValue = item.desc ?? item.description ?? item.text ?? item.details;
+		const entry: ItemEntry = {
+			name,
+			desc: parseDescLines(descValue),
+		};
+
+		entries.push(entry);
+	}
+
+	return entries;
 }
 
 function parseSpeed(value: unknown): SpeedEntry[] {

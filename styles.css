@@ -87,6 +87,10 @@
 	--nimble-accent: color-mix(in srgb, #d2a24a 55%, var(--text-accent));
 }
 
+.nimble-layout-item {
+	--nimble-accent: color-mix(in srgb, #9b59b6 50%, var(--text-accent));
+}
+
 .nimble-statblock::before {
 	content: "";
 	position: absolute;
@@ -245,6 +249,20 @@
 }
 
 .nimble-statblock__name-legendary::first-letter {
+	font-size: inherit;
+	line-height: inherit;
+}
+
+.nimble-statblock__name-item {
+	font-style: normal;
+	font-weight: 800;
+	font-size: 1.9rem;
+	letter-spacing: 0;
+	text-transform: none;
+	line-height: 1.1;
+}
+
+.nimble-statblock__name-item::first-letter {
 	font-size: inherit;
 	line-height: inherit;
 }
@@ -461,8 +479,13 @@
 
 .nimble-statblock__feature-content {
 	display: flex;
-	align-items: center;
+	align-items: flex-start;
 	gap: 0.48rem;
+}
+
+.nimble-statblock__feature-copy {
+	flex: 1 1 auto;
+	min-width: 0;
 }
 
 .nimble-statblock__feature-image {
@@ -475,7 +498,8 @@
 }
 
 .nimble-statblock__feature-copy {
-	display: block;
+	flex: 1 1 auto;
+	min-width: 0;
 }
 
 .nimble-statblock__feature-name {
@@ -614,6 +638,55 @@
 	background: rgba(210, 71, 63, 0.15);
 	color: var(--text-normal);
 	font-size: 0.85rem;
+}
+
+.nimble-statblock__item-flavor {
+	font-size: 1.2rem;
+	font-style: italic;
+	color: var(--nimble-meta);
+	margin-top: 0.1rem;
+	padding-top: 0.35rem;
+	border-top: 1px solid var(--nimble-rule);
+}
+
+.nimble-statblock__item-entries {
+	display: flex;
+	flex-direction: column;
+	gap: 0.28rem;
+}
+
+.nimble-statblock__item-entry {
+	font-size: 1.28rem;
+	line-height: 1.22;
+}
+
+.nimble-statblock__item-entry-name {
+	font-weight: 700;
+}
+
+.nimble-statblock__item-entry-text {
+	font-style: italic;
+	font-weight: 500;
+}
+
+.nimble-rarity-uncommon {
+	color: #888888;
+}
+
+.nimble-rarity-rare {
+	color: #3498db;
+}
+
+.nimble-rarity-very-rare {
+	color: #2471a3;
+}
+
+.nimble-rarity-legendary {
+	color: #e67e22;
+}
+
+.nimble-rarity-mythical {
+	color: #c0392b;
 }
 
 @media (max-width: 720px) {

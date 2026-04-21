@@ -1,6 +1,7 @@
 import { Plugin } from "obsidian";
 import { parseNimbleBlock } from "./parser/parseNimbleBlock";
-import { renderMonsterStatblock } from "./render/statblockRenderer";
+import { renderMonsterStatblock, renderItemStatblock } from "./render/statblockRenderer";
+import type { Statblock } from "./types/statblock";
 
 export default class NimbleStatblocksPlugin extends Plugin {
 	async onload(): Promise<void> {
@@ -16,7 +17,12 @@ export default class NimbleStatblocksPlugin extends Plugin {
 				return;
 			}
 
-			renderMonsterStatblock(this.app, parseResult.statblock, el, ctx.sourcePath);
+			const statblock: Statblock = parseResult.statblock;
+			if (statblock.layout === "item") {
+				renderItemStatblock(this.app, statblock, el, ctx.sourcePath);
+			} else {
+				renderMonsterStatblock(this.app, statblock, el, ctx.sourcePath);
+			}
 		});
 	}
 }

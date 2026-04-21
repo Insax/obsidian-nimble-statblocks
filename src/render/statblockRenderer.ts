@@ -23,6 +23,9 @@ import type {
 	ActionEntry,
 	ActionSaveEntry,
 	ActionTriggerEffect,
+	ItemEntry,
+	ItemRarity,
+	ItemStatblock,
 	MonsterStatblock,
 	SoloPhaseAbility,
 	SoloPhaseState,
@@ -1179,4 +1182,192 @@ function toTitleCase(value: string): string {
 		.filter(Boolean)
 		.map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
 		.join(" ");
+}
+
+type ItemRarityColorClass = "nimble-rarity-uncommon" | "nimble-rarity-rare" | "nimble-rarity-very-rare" | "nimble-rarity-legendary" | "nimble-rarity-mythical";
+
+const RARITY_COLOR_CLASSES: Record<ItemRarity, ItemRarityColorClass> = {
+	"uncommon": "nimble-rarity-uncommon",
+	"rare": "nimble-rarity-rare",
+	"very rare": "nimble-rarity-very-rare",
+	"legendary": "nimble-rarity-legendary",
+	"mythical": "nimble-rarity-mythical",
+};
+
+export function renderItemStatblock(
+	app: App,
+	statblock: ItemStatblock,
+	containerEl: HTMLElement,
+	sourcePath: string,
+): void {
+	containerEl.empty();
+
+	const hostEl = containerEl.createDiv({ cls: "nimble-statblock-host" });
+	const controlsEl = hostEl.createDiv({ cls: "nimble-statblock-controls" });
+	const statblockEl = hostEl.createDiv({
+		cls: ["nimble-statblock", "nimble-layout-item"],
+	});
+
+	renderItemImage(app, statblock, statblockEl, sourcePath);
+	renderItemHeader(statblock, statblockEl);
+	renderItemEntries(statblock.entries, statblockEl);
+
+	if (statblock.flavor) {
+		renderItemFlavor(statblock.flavor, statblockEl);
+	}
+
+	renderItemExportButton(controlsEl, statblock, statblockEl);
+}
+
+function renderItemImage(
+	app: App,
+	statblock: ItemStatblock,
+	containerEl: HTMLElement,
+	sourcePath: string,
+): void {
+	if (!statblock.image) {
+		return;
+	}
+
+	const imageFile = resolveLinkedFile(app, sourcePath, statblock.image);
+	if (!imageFile) {
+		return;
+	}
+
+	containerEl.createEl("img", {
+		cls: "nimble-statblock__image",
+		attr: {
+			src: app.vault.getResourcePath(imageFile),
+			alt: `${statblock.name} art`,
+		},
+	});
+}
+
+function renderItemHeader(statblock: ItemStatblock, containerEl: HTMLElement): void {
+	const headerEl = containerEl.createDiv({ cls: "nimble-statblock__header-row" });
+	const titleEl = headerEl.createDiv({ cls: "nimble-statblock__title-row" });
+
+	titleEl.createEl("span", {
+		cls: ["nimble-statblock__name", "nimble-statblock__name-item", RARITY_COLOR_CLASSES[statblock.rarity]],
+		text: statblock.name,
+	});
+
+	const metaParts: string[] = [statblock.rarity.charAt(0).toUpperCase() + statblock.rarity.slice(1)];
+	if (statblock.itemType) {
+		metaParts.push(statblock.itemType);
+	}
+	if (statblock.requirements) {
+		metaParts.push(`Requires ${statblock.requirements}`);
+	}
+	if (statblock.price) {
+		metaParts.push(statblock.price);
+	}
+
+	titleEl.createEl("span", {
+		cls: "nimble-statblock__meta",
+		text: metaParts.join(" · "),
+	});
+}
+
+function renderItemEntries(entries: ItemEntry[], containerEl: HTMLElement): void {
+	if (entries.length === 0) {
+		return;
+	}
+
+	const entriesEl = containerEl.createDiv({ cls: "nimble-statblock__item-entries" });
+
+	for (const entry of entries) {
+		const entryEl = entriesEl.createDiv({ cls: "nimble-statblock__item-entry" });
+		const labelEl = entryEl.createSpan({
+			cls: "nimble-statblock__item-entry-name",
+			text: `${entry.name}:`,
+		});
+		const detailText = descLinesToSentence(entry.desc);
+		if (detailText) {
+			entryEl.createSpan({
+				cls: "nimble-statblock__item-entry-text",
+				text: ` ${detailText}`,
+			});
+		}
+	}
+}
+
+function renderItemFlavor(flavor: string, containerEl: HTMLElement): void {
+	containerEl.createDiv({
+		cls: "nimble-statblock__item-flavor",
+		text: flavor,
+	});
+}
+
+function renderItemExportButton(
+	containerEl: HTMLElement,
+	statblock: ItemStatblock,
+	exportRoot: HTMLElement,
+): void {
+	const menuTriggerEl = containerEl.createEl("button", {
+		cls: ["clickable-icon", "nimble-statblock-menu-trigger"],
+		attr: {
+			type: "button",
+			"aria-label": "Statblock options",
+			"aria-haspopup": "menu",
+		},
+	});
+	setIcon(menuTriggerEl, "more-horizontal");
+
+	menuTriggerEl.addEventListener("click", (event) => {
+		event.preventDefault();
+		event.stopPropagation();
+
+		const menu = new Menu();
+		menu.addItem((item) => {
+			item
+				.setTitle("Export as PNG")
+				.setIcon("image")
+				.onClick(() => void handleItemPngExport(exportRoot, statblock.name));
+		});
+		menu.showAtMouseEvent(event);
+	});
+}
+
+async function handleItemPngExport(
+	exportRoot: HTMLElement,
+	itemName: string,
+): Promise<void> {
+	try {
+		const outputPath = await exportElementAsPng(exportRoot, `${itemName}-item`);
+		new Notice(`PNG exported: ${outputPath}`);
+	} catch (error) {
+		const message =
+			error instanceof Error ? error.message : "Unknown error while exporting PNG.";
+		new Notice(`PNG export failed: ${message}`);
+	}
+}
+
+async function handleJsonExport(
+	app: App,
+	statblock: MonsterStatblock,
+	sourcePath: string,
+): Promise<void> {
+	try {
+		const outputPath = await exportMonsterAsJson(app, statblock, sourcePath);
+		new Notice(`Nimble JSON exported: ${outputPath}`);
+	} catch (error) {
+		const message =
+			error instanceof Error ? error.message : "Unknown error while exporting JSON.";
+		new Notice(`JSON export failed: ${message}`);
+	}
+}
+
+async function handlePngExport(
+	exportRoot: HTMLElement,
+	monsterName: string,
+): Promise<void> {
+	try {
+		const outputPath = await exportElementAsPng(exportRoot, `${monsterName}-statblock`);
+		new Notice(`PNG exported: ${outputPath}`);
+	} catch (error) {
+		const message =
+			error instanceof Error ? error.message : "Unknown error while exporting PNG.";
+		new Notice(`PNG export failed: ${message}`);
+	}
 }
