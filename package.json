@@ -1,7 +1,7 @@
 {
-	"name": "obsidian-sample-plugin",
-	"version": "1.0.0",
-	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+	"name": "nimble-statblock",
+	"version": "0.1.0",
+	"description": "Nimble statblocks plugin for Obsidian",
 	"main": "main.js",
 	"type": "module",
 	"scripts": {
@@ -13,17 +13,20 @@
 	"keywords": [],
 	"license": "0-BSD",
 	"devDependencies": {
+		"@eslint/js": "9.30.1",
 		"@types/node": "^16.11.6",
 		"esbuild": "0.25.5",
 		"eslint-plugin-obsidianmd": "0.1.9",
 		"globals": "14.0.0",
+		"jiti": "2.6.1",
 		"tslib": "2.4.0",
 		"typescript": "^5.8.3",
-		"typescript-eslint": "8.35.1",
-		"@eslint/js": "9.30.1",
-		"jiti": "2.6.1"
+		"typescript-eslint": "8.35.1"
 	},
 	"dependencies": {
+		"@fortawesome/fontawesome-svg-core": "^7.2.0",
+		"@fortawesome/free-solid-svg-icons": "^7.2.0",
+		"dom-to-image-more": "^3.7.2",
 		"obsidian": "latest"
 	}
 }

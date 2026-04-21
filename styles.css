@@ -1,8 +1,658 @@
-/*
+.nimble-statblock-host {
+	display: flex;
+	flex-direction: column;
+	gap: 0.55rem;
+	margin-block: 1rem;
+}
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+.nimble-statblock-controls {
+	display: flex;
+	justify-content: flex-end;
+}
 
-If your plugin does not need CSS, delete this file.
+.nimble-statblock-menu-trigger {
+	color: var(--text-muted);
+	border-radius: 6px;
+}
 
-*/
+.nimble-statblock-menu-trigger:hover {
+	background: var(--background-modifier-hover);
+	color: var(--text-normal);
+}
+
+.nimble-statblock {
+	--nimble-text: var(--text-normal);
+	--nimble-meta: var(--text-muted);
+	--nimble-accent: color-mix(in srgb, var(--text-accent) 40%, var(--text-normal));
+	--nimble-border: color-mix(in srgb, var(--nimble-accent) 45%, var(--background-modifier-border));
+	--nimble-badge-bg: color-mix(in srgb, var(--background-secondary-alt) 76%, var(--background-modifier-hover));
+	--nimble-badge-border: color-mix(in srgb, var(--nimble-accent) 22%, var(--background-modifier-border));
+	--nimble-badge-tertiary: color-mix(
+		in srgb,
+		var(--background-tertiary, var(--background-modifier-hover)) 78%,
+		var(--text-normal) 22%
+	);
+	--nimble-badge-emblem-stroke: color-mix(
+		in srgb,
+		var(--text-normal) 58%,
+		var(--nimble-badge-tertiary)
+	);
+	--nimble-badge-height: 2.1rem;
+	--nimble-badge-font-size: 1.02rem;
+	--nimble-badge-text-offset: -0.05em;
+	--nimble-badge-shield-width: 2.1rem;
+	--nimble-badge-heart-width: 2.3rem;
+	--nimble-badge-movement-width: 2.58rem;
+	--nimble-ribbon-bg: color-mix(in srgb, var(--background-modifier-hover) 70%, var(--background-secondary));
+	--nimble-ribbon-text: var(--text-normal);
+	--nimble-image-border: color-mix(in srgb, var(--nimble-accent) 28%, var(--background-modifier-border));
+	--nimble-rule: color-mix(in srgb, var(--nimble-accent) 35%, var(--background-modifier-border));
+	--nimble-save-bg: color-mix(in srgb, var(--background-modifier-hover) 65%, transparent);
+	--nimble-save-border: color-mix(in srgb, var(--nimble-accent) 42%, var(--background-modifier-border));
+	--nimble-corner: 14px;
+	--nimble-border-width: 1px;
+	--nimble-name-size: 2.05rem;
+	--nimble-meta-size: 1.7rem;
+	--nimble-name-initial-scale: 1.32;
+	position: relative;
+	padding: 1rem 1.15rem 1.05rem;
+	max-width: fit-content;
+	min-width: min(100%, 31rem);
+	background: transparent;
+	display: flex;
+	flex-direction: column;
+	gap: 0.65rem;
+	font-family: "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", serif;
+	color: var(--nimble-text);
+	line-height: 1.2;
+	isolation: isolate;
+}
+
+.nimble-layout-solo {
+	--nimble-accent: color-mix(in srgb, #e16b61 60%, var(--text-accent));
+}
+
+.nimble-layout-legendary {
+	--nimble-accent: color-mix(in srgb, #4f5966 65%, var(--text-normal));
+	--nimble-inner-inset: 8px;
+	--nimble-inner-corner: 10px;
+}
+
+.nimble-layout-normal,
+.nimble-layout-flunky {
+	--nimble-accent: color-mix(in srgb, var(--text-accent) 45%, var(--text-normal));
+}
+
+.nimble-layout-minion {
+	--nimble-accent: color-mix(in srgb, #d2a24a 55%, var(--text-accent));
+}
+
+.nimble-statblock::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background:
+		linear-gradient(var(--nimble-border) 0 0)
+			calc(var(--nimble-corner)) 0
+			/ calc(100% - (var(--nimble-corner) * 2)) var(--nimble-border-width) no-repeat,
+		linear-gradient(var(--nimble-border) 0 0)
+			calc(var(--nimble-corner)) 100%
+			/ calc(100% - (var(--nimble-corner) * 2)) var(--nimble-border-width) no-repeat,
+		linear-gradient(var(--nimble-border) 0 0)
+			0 calc(var(--nimble-corner))
+			/ var(--nimble-border-width) calc(100% - (var(--nimble-corner) * 2)) no-repeat,
+		linear-gradient(var(--nimble-border) 0 0)
+			100% calc(var(--nimble-corner))
+			/ var(--nimble-border-width) calc(100% - (var(--nimble-corner) * 2)) no-repeat,
+		radial-gradient(
+			circle at 0 0,
+			transparent calc(var(--nimble-corner) - var(--nimble-border-width)),
+			var(--nimble-border) calc(var(--nimble-corner) - var(--nimble-border-width)) var(--nimble-corner),
+			transparent var(--nimble-corner)
+		)
+			0 0 / var(--nimble-corner) var(--nimble-corner) no-repeat,
+		radial-gradient(
+			circle at 100% 0,
+			transparent calc(var(--nimble-corner) - var(--nimble-border-width)),
+			var(--nimble-border) calc(var(--nimble-corner) - var(--nimble-border-width)) var(--nimble-corner),
+			transparent var(--nimble-corner)
+		)
+			100% 0 / var(--nimble-corner) var(--nimble-corner) no-repeat,
+		radial-gradient(
+			circle at 100% 100%,
+			transparent calc(var(--nimble-corner) - var(--nimble-border-width)),
+			var(--nimble-border) calc(var(--nimble-corner) - var(--nimble-border-width)) var(--nimble-corner),
+			transparent var(--nimble-corner)
+		)
+			100% 100% / var(--nimble-corner) var(--nimble-corner) no-repeat,
+		radial-gradient(
+			circle at 0 100%,
+			transparent calc(var(--nimble-corner) - var(--nimble-border-width)),
+			var(--nimble-border) calc(var(--nimble-corner) - var(--nimble-border-width)) var(--nimble-corner),
+			transparent var(--nimble-corner)
+		)
+			0 100% / var(--nimble-corner) var(--nimble-corner) no-repeat;
+	pointer-events: none;
+	z-index: 0;
+}
+
+.nimble-layout-legendary::after {
+	content: "";
+	position: absolute;
+	inset: var(--nimble-inner-inset);
+	background:
+		linear-gradient(var(--nimble-border) 0 0)
+			calc(var(--nimble-inner-corner)) 0
+			/ calc(100% - (var(--nimble-inner-corner) * 2)) var(--nimble-border-width)
+			no-repeat,
+		linear-gradient(var(--nimble-border) 0 0)
+			calc(var(--nimble-inner-corner)) 100%
+			/ calc(100% - (var(--nimble-inner-corner) * 2)) var(--nimble-border-width)
+			no-repeat,
+		linear-gradient(var(--nimble-border) 0 0)
+			0 calc(var(--nimble-inner-corner))
+			/ var(--nimble-border-width) calc(100% - (var(--nimble-inner-corner) * 2))
+			no-repeat,
+		linear-gradient(var(--nimble-border) 0 0)
+			100% calc(var(--nimble-inner-corner))
+			/ var(--nimble-border-width) calc(100% - (var(--nimble-inner-corner) * 2))
+			no-repeat,
+		radial-gradient(
+			circle at 0 0,
+			transparent calc(var(--nimble-inner-corner) - var(--nimble-border-width)),
+			var(--nimble-border)
+				calc(var(--nimble-inner-corner) - var(--nimble-border-width))
+				var(--nimble-inner-corner),
+			transparent var(--nimble-inner-corner)
+		)
+			0 0 / var(--nimble-inner-corner) var(--nimble-inner-corner) no-repeat,
+		radial-gradient(
+			circle at 100% 0,
+			transparent calc(var(--nimble-inner-corner) - var(--nimble-border-width)),
+			var(--nimble-border)
+				calc(var(--nimble-inner-corner) - var(--nimble-border-width))
+				var(--nimble-inner-corner),
+			transparent var(--nimble-inner-corner)
+		)
+			100% 0 / var(--nimble-inner-corner) var(--nimble-inner-corner) no-repeat,
+		radial-gradient(
+			circle at 100% 100%,
+			transparent calc(var(--nimble-inner-corner) - var(--nimble-border-width)),
+			var(--nimble-border)
+				calc(var(--nimble-inner-corner) - var(--nimble-border-width))
+				var(--nimble-inner-corner),
+			transparent var(--nimble-inner-corner)
+		)
+			100% 100% / var(--nimble-inner-corner) var(--nimble-inner-corner) no-repeat,
+		radial-gradient(
+			circle at 0 100%,
+			transparent calc(var(--nimble-inner-corner) - var(--nimble-border-width)),
+			var(--nimble-border)
+				calc(var(--nimble-inner-corner) - var(--nimble-border-width))
+				var(--nimble-inner-corner),
+			transparent var(--nimble-inner-corner)
+		)
+			0 100% / var(--nimble-inner-corner) var(--nimble-inner-corner) no-repeat;
+	pointer-events: none;
+	z-index: 0;
+}
+
+.nimble-statblock > * {
+	position: relative;
+	z-index: 1;
+}
+
+.nimble-statblock__header-row {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 0.8rem;
+}
+
+.nimble-statblock__title-row {
+	display: flex;
+	align-items: baseline;
+	flex-wrap: wrap;
+	gap: 0.45rem;
+}
+
+.nimble-statblock__title-row-legendary {
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.16rem;
+}
+
+.nimble-statblock__name {
+	font-size: var(--nimble-name-size);
+	font-style: italic;
+	font-weight: 700;
+	letter-spacing: 0.01em;
+	text-transform: uppercase;
+}
+
+.nimble-statblock__name::first-letter {
+	font-size: calc(var(--nimble-name-size) * var(--nimble-name-initial-scale));
+	line-height: 0.82;
+}
+
+.nimble-statblock__name-legendary {
+	font-style: normal;
+	font-weight: 800;
+	font-size: clamp(2.35rem, 4.2vw, 3.15rem);
+	letter-spacing: 0;
+	text-transform: none;
+	line-height: 0.95;
+}
+
+.nimble-statblock__name-legendary::first-letter {
+	font-size: inherit;
+	line-height: inherit;
+}
+
+.nimble-statblock__meta {
+	font-size: var(--nimble-meta-size);
+	text-transform: uppercase;
+	letter-spacing: 0.01em;
+	color: var(--nimble-meta);
+}
+
+.nimble-statblock__meta::first-letter {
+	font-size: var(--nimble-name-size);
+	font-weight: 700;
+	line-height: 0.9;
+}
+
+.nimble-statblock__meta-legendary {
+	font-size: 1.95rem;
+	text-transform: none;
+	letter-spacing: 0;
+	font-weight: 700;
+	color: color-mix(in srgb, var(--nimble-meta) 75%, var(--nimble-text));
+}
+
+.nimble-statblock__meta-legendary::first-letter {
+	font-size: inherit;
+	font-weight: inherit;
+	line-height: inherit;
+}
+
+.nimble-statblock__badges {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	padding-top: 0.14rem;
+}
+
+.nimble-statblock__badge {
+	height: var(--nimble-badge-height);
+	min-width: var(--nimble-badge-height);
+	padding: 0 0.52rem;
+	border-radius: 999px;
+	background: var(--nimble-badge-bg);
+	border: 1px solid var(--nimble-badge-border);
+	display: grid;
+	place-items: center;
+	font-size: var(--nimble-badge-font-size);
+	font-style: normal;
+	font-weight: 900;
+	line-height: 1;
+	color: var(--nimble-text);
+	fill: currentColor;
+	stroke: currentColor;
+	text-align: center;
+	transform: none;
+}
+
+.nimble-statblock__badge-shield {
+	width: var(--nimble-badge-shield-width);
+	min-width: var(--nimble-badge-shield-width);
+	padding: 0;
+	border: none;
+	background: transparent;
+	position: relative;
+	overflow: visible;
+	--nimble-icon-scale: 1;
+	--nimble-icon-shift-x: 0px;
+	--nimble-icon-shift-y: 0px;
+}
+
+.nimble-statblock__badge-heart {
+	width: var(--nimble-badge-heart-width);
+	min-width: var(--nimble-badge-heart-width);
+	padding: 0;
+	border: none;
+	background: transparent;
+	position: relative;
+	overflow: visible;
+	--nimble-icon-scale: 1.05;
+	--nimble-icon-shift-x: 0px;
+	--nimble-icon-shift-y: 0px;
+}
+
+.nimble-statblock__badge-movement {
+	width: var(--nimble-badge-movement-width);
+	min-width: var(--nimble-badge-movement-width);
+	padding: 0;
+	border: none;
+	background: transparent;
+	position: relative;
+	overflow: visible;
+	--nimble-icon-scale: 1.02;
+	--nimble-icon-shift-x: 0px;
+	--nimble-icon-shift-y: 0px;
+}
+
+.nimble-statblock__badge-movement-walk {
+	--nimble-icon-scale: 0.6;
+	--nimble-icon-shift-x: -6%;
+	--nimble-icon-shift-y: -15%;
+}
+
+.nimble-statblock__badge-movement-fly {
+	--nimble-icon-scale: 1.02;
+}
+
+.nimble-statblock__badge-movement-climb {
+	--nimble-icon-scale: 0.88;
+}
+
+.nimble-statblock__badge-movement-swim {
+	--nimble-icon-scale: 0.9;
+}
+
+.nimble-statblock__badge-movement-burrow {
+	--nimble-icon-scale: 0.96;
+}
+
+.nimble-statblock__badge-save {
+	min-width: 4.9rem;
+	width: auto;
+	padding: 0 0.35rem;
+	border: none;
+	background: transparent;
+	position: relative;
+	overflow: visible;
+	font-size: 0.78rem;
+	font-weight: 800;
+	letter-spacing: 0.01em;
+	text-align: center;
+	--nimble-icon-scale: 1.07;
+	--nimble-icon-shift-x: 0px;
+	--nimble-icon-shift-y: 0px;
+}
+
+.nimble-statblock__badge-save .nimble-statblock__badge-icon {
+	inset: auto;
+	top: 50%;
+	left: 50%;
+	width: var(--nimble-badge-height);
+	height: var(--nimble-badge-height);
+	transform: translate(-50%, -50%);
+}
+
+.nimble-statblock__badge-save .nimble-statblock__badge-icon-value {
+	display: block;
+	padding: 0 0.25rem;
+	white-space: nowrap;
+	transform: translateY(-0.02em);
+}
+
+.nimble-statblock__badge-icon {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-items: center;
+	color: var(--nimble-badge-tertiary);
+	filter: drop-shadow(0 0 0.5px var(--nimble-badge-emblem-stroke));
+}
+
+.nimble-statblock__badge-icon svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+	transform: translate(var(--nimble-icon-shift-x, 0px), var(--nimble-icon-shift-y, 0px))
+		scale(var(--nimble-icon-scale, 1));
+}
+
+.nimble-statblock__badge-icon-value {
+	position: relative;
+	z-index: 1;
+	line-height: 1;
+	font-size: 1em;
+	font-weight: 900;
+	color: var(--nimble-text);
+	transform: translateY(var(--nimble-badge-text-offset));
+}
+
+.nimble-statblock__badge-movement-walk .nimble-statblock__badge-icon-value {
+	transform: translate(-0.08em, var(--nimble-badge-text-offset));
+}
+
+.nimble-statblock__image {
+	display: block;
+	width: 100%;
+	max-height: 14rem;
+	border-radius: 6px;
+	border: 1px solid var(--nimble-image-border);
+	object-fit: cover;
+}
+
+.nimble-statblock__ribbons {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+}
+
+.nimble-statblock__feature-ribbon {
+	padding: 0.42rem 1rem 0.46rem;
+	background: var(--nimble-ribbon-bg);
+	clip-path: polygon(
+		23px 0,
+		calc(100% - 23px) 0,
+		100% 50%,
+		calc(100% - 23px) 100%,
+		23px 100%,
+		0 50%
+	);
+	font-size: 1.56rem;
+	line-height: 1.16;
+	color: var(--nimble-ribbon-text);
+}
+
+.nimble-statblock__feature-content {
+	display: flex;
+	align-items: center;
+	gap: 0.48rem;
+}
+
+.nimble-statblock__feature-image {
+	display: block;
+	flex: 0 0 auto;
+	width: auto;
+	height: 1.16em;
+	max-height: 100%;
+	object-fit: contain;
+}
+
+.nimble-statblock__feature-copy {
+	display: block;
+}
+
+.nimble-statblock__feature-name {
+	font-weight: 700;
+	font-style: italic;
+}
+
+.nimble-statblock__feature-text {
+	font-style: italic;
+	font-weight: 500;
+}
+
+.nimble-statblock__actions {
+	margin: 0.14rem 0 0;
+	padding-left: 1.15rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.22rem;
+}
+
+.nimble-statblock__actions-section {
+	margin-top: 0.1rem;
+}
+
+.nimble-statblock__section-heading {
+	font-size: 1.3rem;
+	font-weight: 800;
+	letter-spacing: 0.01em;
+	text-transform: uppercase;
+}
+
+.nimble-statblock__action-line {
+	font-size: 1.26rem;
+	line-height: 1.25;
+}
+
+.nimble-statblock__action-line-has-image {
+	list-style: none;
+	display: grid;
+	grid-template-columns: auto 1fr;
+	column-gap: 0.36em;
+	align-items: start;
+}
+
+.nimble-statblock__action-image {
+	display: block;
+	width: auto;
+	margin-top: 0.08em;
+	height: 1.02em;
+	max-width: 1.02em;
+	object-fit: contain;
+}
+
+.nimble-statblock__action-content {
+	min-width: 0;
+}
+
+.nimble-statblock__action-name {
+	font-weight: 700;
+}
+
+.nimble-statblock__action-flavor {
+	font-style: italic;
+}
+
+.nimble-statblock__solo-section {
+	margin-top: 0.2rem;
+	padding-top: 0.38rem;
+	border-top: 1px solid var(--nimble-rule);
+	display: flex;
+	flex-direction: column;
+	gap: 0.34rem;
+}
+
+.nimble-statblock__saves {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+}
+
+.nimble-statblock__save {
+	padding: 0.15rem 0.45rem;
+	border-radius: 999px;
+	border: 1px solid var(--nimble-save-border);
+	background: var(--nimble-save-bg);
+	font-size: 0.78rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+}
+
+.nimble-statblock__solo-line {
+	font-size: 0.82rem;
+	font-style: italic;
+	color: var(--nimble-meta);
+}
+
+.nimble-statblock__legendary-phases {
+	margin-top: 0.25rem;
+	padding-top: 0.4rem;
+	border-top: 1px solid var(--nimble-rule);
+	display: flex;
+	flex-direction: column;
+	gap: 0.44rem;
+}
+
+.nimble-statblock__legendary-phase {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+}
+
+.nimble-statblock__legendary-phase-title {
+	font-size: 1.15rem;
+	font-weight: 800;
+	text-transform: uppercase;
+	letter-spacing: 0.01em;
+}
+
+.nimble-statblock__legendary-phase-list {
+	margin: 0;
+	padding-left: 1.18rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.18rem;
+}
+
+.nimble-statblock__legendary-phase-item {
+	font-size: 1.12rem;
+	line-height: 1.24;
+}
+
+.nimble-statblock-error {
+	padding: 0.5rem 0.65rem;
+	border-radius: 8px;
+	border: 1px solid rgba(210, 71, 63, 0.58);
+	background: rgba(210, 71, 63, 0.15);
+	color: var(--text-normal);
+	font-size: 0.85rem;
+}
+
+@media (max-width: 720px) {
+	.nimble-statblock {
+		min-width: 100%;
+		--nimble-name-size: 1.55rem;
+		--nimble-meta-size: 1.2rem;
+		--nimble-badge-height: 1.9rem;
+		--nimble-badge-font-size: 0.9rem;
+		--nimble-badge-shield-width: 1.9rem;
+		--nimble-badge-heart-width: 2.08rem;
+		--nimble-badge-movement-width: 2.28rem;
+	}
+
+	.nimble-statblock__feature-ribbon {
+		font-size: 1.08rem;
+	}
+
+	.nimble-statblock__action-line {
+		font-size: 1rem;
+	}
+
+	.nimble-statblock__meta-legendary {
+		font-size: 1.28rem;
+	}
+
+	.nimble-statblock__name-legendary {
+		font-size: clamp(1.9rem, 8vw, 2.45rem);
+	}
+
+	.nimble-statblock__section-heading {
+		font-size: 1.1rem;
+	}
+
+	.nimble-statblock__legendary-phase-title {
+		font-size: 1rem;
+	}
+
+	.nimble-statblock__legendary-phase-item {
+		font-size: 0.96rem;
+	}
+}
