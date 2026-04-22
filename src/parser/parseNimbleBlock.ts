@@ -8,6 +8,7 @@ import type {
 	ActionSaveEntry,
 	ActionTriggerEffect,
 	ItemEntry,
+	ItemPrice,
 	ItemRarity,
 	ItemStatblock,
 	MonsterLayout,
@@ -199,13 +200,14 @@ function parseItemBlock(source: Record<string, unknown>): ParseResult {
 	const itemType = asOptionalString(
 		source.type ?? source.item_type ?? source.itemType ?? "Unknown",
 	) ?? "Unknown";
-	const requirements = asOptionalString(
-		source.requirements ?? source.requirement ?? source.requires,
-	);
-	const price = asOptionalString(source.price ?? source.cost);
+	const price = parseItemPrice(source.price ?? source.cost);
 	const image = asOptionalLinkString(source.image);
 	const flavor = asOptionalString(source.flavor ?? source.flavor_text ?? source.flavorText);
 	const entries = parseItemEntries(source.entries ?? source.effects ?? source.abilities);
+
+	const requirement = parseItemRequirement(
+		source.requirement ?? source.requires ?? source.requires_attunement,
+	);
 
 	const itemStatblock: ItemStatblock = {
 		name,
@@ -215,8 +217,8 @@ function parseItemBlock(source: Record<string, unknown>): ParseResult {
 		entries,
 	};
 
-	if (requirements) {
-		itemStatblock.requirements = requirements;
+	if (requirement) {
+		itemStatblock.requirement = requirement;
 	}
 	if (price) {
 		itemStatblock.price = price;
@@ -229,6 +231,60 @@ function parseItemBlock(source: Record<string, unknown>): ParseResult {
 	}
 
 	return { statblock: itemStatblock };
+}
+
+function parseItemRequirement(value: unknown): ItemStatblock["requirement"] | undefined {
+	if (!value) {
+		return undefined;
+	}
+
+	if (typeof value === "string") {
+		return { name: value, desc: [] };
+	}
+
+	if (isRecord(value)) {
+		const type = asOptionalString(value.type);
+		const reqName = asTrimmedString(value.name ?? value.requirement ?? value.requires);
+		if (!reqName) {
+			return undefined;
+		}
+		const descValue = value.desc ?? value.description ?? value.details;
+		return {
+			type: type ?? "Requires",
+			name: reqName,
+			desc: parseDescLines(descValue),
+		};
+	}
+
+	return undefined;
+}
+
+function parseItemPrice(value: unknown): ItemPrice | undefined {
+	if (!value) {
+		return undefined;
+	}
+
+	if (typeof value === "string") {
+		return { value, currency: "gp" };
+	}
+
+	if (isRecord(value)) {
+		const priceValue = asTrimmedString(value.value ?? value.amount);
+		if (!priceValue) {
+			return undefined;
+		}
+		const currencyStr = asOptionalString(value.currency ?? value.coin);
+		let currency: ItemPrice["currency"] = "gp";
+		if (currencyStr) {
+			const c = currencyStr.toLowerCase();
+			if (c === "sp" || c === "cp") {
+				currency = c;
+			}
+		}
+		return { value: priceValue, currency };
+	}
+
+	return undefined;
 }
 
 function parseRarity(value: unknown): ItemRarity {
@@ -265,6 +321,16 @@ function parseItemEntries(value: unknown): ItemEntry[] {
 			name,
 			desc: parseDescLines(descValue),
 		};
+
+		const activation = asOptionalString(item.activation ?? item.cost);
+		if (activation) {
+			entry.activation = activation;
+		}
+
+		const limit = asOptionalString(item.limit ?? item.uses ?? item.recharge);
+		if (limit) {
+			entry.limit = limit;
+		}
 
 		entries.push(entry);
 	}

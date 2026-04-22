@@ -91,6 +91,66 @@
 	--nimble-accent: color-mix(in srgb, #9b59b6 50%, var(--text-accent));
 }
 
+.nimble-statblock__item-image-box {
+	flex-shrink: 0;
+	width: 7rem;
+	height: 7rem;
+	border-radius: 6px;
+	overflow: hidden;
+}
+
+.nimble-statblock__item-image-box img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.nimble-statblock__item-header {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.75rem;
+}
+
+.nimble-statblock__item-header-info {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+}
+
+.nimble-statblock__item-header-title-row {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+}
+
+.nimble-statblock__item-header-price {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	font-size: 1.2rem;
+	font-weight: 600;
+}
+
+.nimble-item-coin-gold,
+.nimble-item-coin-silver,
+.nimble-item-coin-copper {
+	display: flex;
+	align-items: center;
+	font-size: 1.2rem;
+}
+
+.nimble-item-coin-gold {
+	color: gold;
+}
+
+.nimble-item-coin-silver {
+	color: #c0c0c0;
+}
+
+.nimble-item-coin-copper {
+	color: #b87333;
+}
+
 .nimble-statblock::before {
 	content: "";
 	position: absolute;
@@ -656,12 +716,32 @@
 }
 
 .nimble-statblock__item-entry {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
 	font-size: 1.28rem;
 	line-height: 1.22;
+	gap: 0.3rem;
 }
 
 .nimble-statblock__item-entry-name {
+	display: flex;
+	align-items: baseline;
+}
+
+.nimble-statblock__item-entry-name-text {
 	font-weight: 700;
+}
+
+.nimble-statblock__item-entry-meta {
+	font-size: 1rem;
+	font-style: normal;
+	font-weight: 500;
+	color: var(--nimble-meta);
+}
+
+.nimble-statblock__item-entry-action {
+	font-style: italic;
 }
 
 .nimble-statblock__item-entry-text {

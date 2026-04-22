@@ -1208,8 +1208,8 @@ export function renderItemStatblock(
 		cls: ["nimble-statblock", "nimble-layout-item"],
 	});
 
-	renderItemImage(app, statblock, statblockEl, sourcePath);
-	renderItemHeader(statblock, statblockEl);
+	renderItemHeader(app, statblock, statblockEl, sourcePath);
+	renderItemRequirement(statblock, statblockEl);
 	renderItemEntries(statblock.entries, statblockEl);
 
 	if (statblock.flavor) {
@@ -1243,33 +1243,85 @@ function renderItemImage(
 	});
 }
 
-function renderItemHeader(statblock: ItemStatblock, containerEl: HTMLElement): void {
-	const headerEl = containerEl.createDiv({ cls: "nimble-statblock__header-row" });
-	const titleEl = headerEl.createDiv({ cls: "nimble-statblock__title-row" });
+function renderItemHeader(
+	app: App,
+	statblock: ItemStatblock,
+	containerEl: HTMLElement,
+	sourcePath: string,
+): void {
+	const headerEl = containerEl.createDiv({ cls: "nimble-statblock__item-header" });
 
-	titleEl.createEl("span", {
-		cls: ["nimble-statblock__name", "nimble-statblock__name-item", RARITY_COLOR_CLASSES[statblock.rarity]],
+	const imageFile = statblock.image ? resolveLinkedFile(app, sourcePath, statblock.image) : null;
+	const hasImage = !!imageFile;
+
+	if (hasImage && imageFile) {
+		const imageBoxEl = headerEl.createDiv({ cls: "nimble-statblock__item-image-box" });
+		imageBoxEl.createEl("img", {
+			cls: "nimble-statblock__image",
+			attr: { src: app.vault.getResourcePath(imageFile), alt: `${statblock.name} art` },
+		});
+	}
+
+	const infoEl = headerEl.createDiv({ cls: "nimble-statblock__item-header-info" });
+
+	const titleRowEl = infoEl.createDiv({ cls: "nimble-statblock__item-header-title-row" });
+	titleRowEl.createEl("span", {
+		cls: ["nimble-statblock__name", RARITY_COLOR_CLASSES[statblock.rarity]],
 		text: statblock.name,
 	});
-
-	const metaParts: string[] = [statblock.rarity.charAt(0).toUpperCase() + statblock.rarity.slice(1)];
-	if (statblock.itemType) {
-		metaParts.push(statblock.itemType);
-	}
-	if (statblock.requirements) {
-		metaParts.push(`Requires ${statblock.requirements}`);
-	}
-	if (statblock.price) {
-		metaParts.push(statblock.price);
-	}
-
-	titleEl.createEl("span", {
+	titleRowEl.createEl("span", {
 		cls: "nimble-statblock__meta",
-		text: metaParts.join(" · "),
+		text: ` ${statblock.rarity.charAt(0).toUpperCase() + statblock.rarity.slice(1)} ${statblock.itemType}`,
 	});
+
+	if (statblock.price) {
+		const priceEl = infoEl.createDiv({ cls: "nimble-statblock__item-header-price" });
+		const coinEl = priceEl.createEl("span", { cls: "nimble-item-coin" });
+		const currency = statblock.price.currency;
+		if (currency === "sp") {
+			coinEl.addClasses(["nimble-item-coin-silver"]);
+		} else if (currency === "cp") {
+			coinEl.addClasses(["nimble-item-coin-copper"]);
+		} else {
+			coinEl.addClasses(["nimble-item-coin-gold"]);
+		}
+		setIcon(coinEl, "coins");
+		priceEl.createSpan({ text: ` ${statblock.price.value}` });
+	}
 }
 
-function renderItemEntries(entries: ItemEntry[], containerEl: HTMLElement): void {
+function renderItemRequirement(
+	statblock: ItemStatblock,
+	containerEl: HTMLElement,
+): void {
+	if (!statblock.requirement) {
+		return;
+	}
+
+	const reqEl = containerEl.createDiv({ cls: "nimble-statblock__item-entry" });
+
+	const nameEl = reqEl.createEl("span", { cls: "nimble-statblock__item-entry-name" });
+	nameEl.createSpan({
+		cls: "nimble-statblock__item-entry-name-text",
+		text: "Requirement",
+	});
+	nameEl.createSpan({ text: ":" });
+
+	if (statblock.requirement.name) {
+		reqEl.createSpan({ text: " " });
+		reqEl.createSpan({ cls: "nimble-statblock__item-entry-action", text: statblock.requirement.name });
+	}
+
+	const detailText = descLinesToSentence(statblock.requirement.desc);
+	if (detailText) {
+		reqEl.createSpan({ cls: "nimble-statblock__item-entry-text", text: ` ${detailText}` });
+	}
+}
+
+function renderItemEntries(
+	entries: ItemEntry[],
+	containerEl: HTMLElement,
+): void {
 	if (entries.length === 0) {
 		return;
 	}
@@ -1278,10 +1330,31 @@ function renderItemEntries(entries: ItemEntry[], containerEl: HTMLElement): void
 
 	for (const entry of entries) {
 		const entryEl = entriesEl.createDiv({ cls: "nimble-statblock__item-entry" });
-		const labelEl = entryEl.createSpan({
+
+		const nameEl = entryEl.createEl("span", {
 			cls: "nimble-statblock__item-entry-name",
-			text: `${entry.name}:`,
 		});
+		nameEl.createEl("span", {
+			cls: "nimble-statblock__item-entry-name-text",
+			text: entry.name,
+		});
+		nameEl.createSpan({ text: ":" });
+
+		if (entry.activation || entry.limit) {
+			const metaEl = entryEl.createSpan({ cls: "nimble-statblock__item-entry-meta" });
+			metaEl.createSpan({ text: " (" });
+			if (entry.activation) {
+				metaEl.createSpan({ cls: "nimble-statblock__item-entry-action", text: entry.activation });
+			}
+			if (entry.activation && entry.limit) {
+				metaEl.createSpan({ text: ", " });
+			}
+			if (entry.limit) {
+				metaEl.createSpan({ cls: "nimble-statblock__item-entry-action", text: entry.limit });
+			}
+			metaEl.createSpan({ text: ")" });
+		}
+
 		const detailText = descLinesToSentence(entry.desc);
 		if (detailText) {
 			entryEl.createSpan({
@@ -1335,35 +1408,6 @@ async function handleItemPngExport(
 ): Promise<void> {
 	try {
 		const outputPath = await exportElementAsPng(exportRoot, `${itemName}-item`);
-		new Notice(`PNG exported: ${outputPath}`);
-	} catch (error) {
-		const message =
-			error instanceof Error ? error.message : "Unknown error while exporting PNG.";
-		new Notice(`PNG export failed: ${message}`);
-	}
-}
-
-async function handleJsonExport(
-	app: App,
-	statblock: MonsterStatblock,
-	sourcePath: string,
-): Promise<void> {
-	try {
-		const outputPath = await exportMonsterAsJson(app, statblock, sourcePath);
-		new Notice(`Nimble JSON exported: ${outputPath}`);
-	} catch (error) {
-		const message =
-			error instanceof Error ? error.message : "Unknown error while exporting JSON.";
-		new Notice(`JSON export failed: ${message}`);
-	}
-}
-
-async function handlePngExport(
-	exportRoot: HTMLElement,
-	monsterName: string,
-): Promise<void> {
-	try {
-		const outputPath = await exportElementAsPng(exportRoot, `${monsterName}-statblock`);
 		new Notice(`PNG exported: ${outputPath}`);
 	} catch (error) {
 		const message =

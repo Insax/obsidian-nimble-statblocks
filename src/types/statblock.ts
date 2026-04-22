@@ -83,9 +83,22 @@ export interface MonsterStatblock {
 	bloodiedState?: SoloPhaseState;
 }
 
-export interface ItemEntry {
+export interface ItemRequirement {
+	type?: string;
 	name: string;
 	desc: AbilityDescLine[];
+}
+
+export interface ItemEntry {
+	name: string;
+	activation?: string;
+	limit?: string;
+	desc: AbilityDescLine[];
+}
+
+export interface ItemPrice {
+	value: string;
+	currency: "gp" | "sp" | "cp";
 }
 
 export interface ItemStatblock {
@@ -93,8 +106,8 @@ export interface ItemStatblock {
 	layout: "item";
 	rarity: ItemRarity;
 	itemType: string;
-	requirements?: string;
-	price?: string;
+	requirement?: ItemRequirement;
+	price?: ItemPrice;
 	image?: string;
 	flavor?: string;
 	entries: ItemEntry[];
