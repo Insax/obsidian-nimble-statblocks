@@ -15,7 +15,7 @@ import {
 	faWater,
 } from "@fortawesome/free-solid-svg-icons";
 import { exportMonsterAsJson } from "../export/exportJson";
-import { exportElementAsPng } from "../export/exportPng";
+import { exportElementAsPng, exportElementAsPrintFriendlyPng } from "../export/exportPng";
 import { resolveLinkedFile } from "../export/assets";
 import type {
 	AbilityDescLine,
@@ -145,6 +145,12 @@ function renderExportButtons(
 				.setIcon("image")
 				.onClick(() => void handlePngExport(exportRoot, statblock.name));
 		});
+		menu.addItem((item) => {
+			item
+				.setTitle("Export to Print Friendly PNG")
+				.setIcon("printer")
+				.onClick(() => void handlePrintFriendlyPngExport(exportRoot, statblock.name));
+		});
 		menu.showAtMouseEvent(event);
 	});
 }
@@ -171,6 +177,20 @@ async function handlePngExport(
 	try {
 		const outputPath = await exportElementAsPng(exportRoot, `${monsterName}-statblock`);
 		new Notice(`PNG exported: ${outputPath}`);
+	} catch (error) {
+		const message =
+			error instanceof Error ? error.message : "Unknown error while exporting PNG.";
+		new Notice(`PNG export failed: ${message}`);
+	}
+}
+
+async function handlePrintFriendlyPngExport(
+	exportRoot: HTMLElement,
+	monsterName: string,
+): Promise<void> {
+	try {
+		const outputPath = await exportElementAsPrintFriendlyPng(exportRoot, `${monsterName}-statblock`);
+		new Notice(`Print friendly PNG exported: ${outputPath}`);
 	} catch (error) {
 		const message =
 			error instanceof Error ? error.message : "Unknown error while exporting PNG.";
@@ -1209,6 +1229,7 @@ export function renderItemStatblock(
 	});
 
 	renderItemHeader(app, statblock, statblockEl, sourcePath);
+	limitItemWidth(statblockEl);
 	renderItemRequirement(statblock, statblockEl);
 	renderItemEntries(statblock.entries, statblockEl);
 
@@ -1398,6 +1419,12 @@ function renderItemExportButton(
 				.setIcon("image")
 				.onClick(() => void handleItemPngExport(exportRoot, statblock.name));
 		});
+		menu.addItem((item) => {
+			item
+				.setTitle("Export to Print Friendly PNG")
+				.setIcon("printer")
+				.onClick(() => void handleItemPrintFriendlyPngExport(exportRoot, statblock.name));
+		});
 		menu.showAtMouseEvent(event);
 	});
 }
@@ -1414,4 +1441,28 @@ async function handleItemPngExport(
 			error instanceof Error ? error.message : "Unknown error while exporting PNG.";
 		new Notice(`PNG export failed: ${message}`);
 	}
+}
+
+async function handleItemPrintFriendlyPngExport(
+	exportRoot: HTMLElement,
+	itemName: string,
+): Promise<void> {
+	try {
+		const outputPath = await exportElementAsPrintFriendlyPng(exportRoot, `${itemName}-item`);
+		new Notice(`Print friendly PNG exported: ${outputPath}`);
+	} catch (error) {
+		const message =
+			error instanceof Error ? error.message : "Unknown error while exporting PNG.";
+		new Notice(`PNG export failed: ${message}`);
+	}
+}
+
+function limitItemWidth(statblockEl: HTMLElement): void {
+	requestAnimationFrame(() => {
+		const headerEl = statblockEl.querySelector(".nimble-statblock__item-header");
+		const entriesEl = statblockEl.querySelector(".nimble-statblock__item-entries");
+		if (!headerEl || !entriesEl) return;
+		const headerWidth = (headerEl as HTMLElement).offsetWidth;
+		(entriesEl as HTMLElement).style.maxWidth = `${headerWidth}px`;
+	});
 }

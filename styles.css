@@ -91,6 +91,11 @@
 	--nimble-accent: color-mix(in srgb, #9b59b6 50%, var(--text-accent));
 }
 
+.nimble-layout-item .nimble-statblock__item-entries {
+	display: block;
+	word-break: break-word;
+}
+
 .nimble-statblock__item-image-box {
 	flex-shrink: 0;
 	width: 7rem;
@@ -808,4 +813,100 @@
 	.nimble-statblock__legendary-phase-item {
 		font-size: 0.96rem;
 	}
+}
+
+.nimble-print-friendly {
+	--nimble-border: #1a1a1a;
+	--nimble-accent: #1a1a1a;
+	--nimble-text: #1a1a1a;
+	--nimble-meta: #555555;
+	--nimble-image-border: #1a1a1a;
+	--nimble-rule: #1a1a1a;
+	--nimble-save-bg: #f5f5f5;
+	--nimble-save-border: #1a1a1a;
+	--nimble-ribbon-bg: #e0e0e0;
+	--nimble-ribbon-text: #1a1a1a;
+	--nimble-badge-bg: #f0f0f0;
+	--nimble-badge-border: #1a1a1a;
+}
+
+.nimble-print-friendly .nimble-statblock__image,
+.nimble-print-friendly .nimble-item-header-image {
+	display: none;
+}
+
+.nimble-print-friendly .nimble-statblock__item-image-box {
+	display: none;
+}
+
+.nimble-print-friendly .nimble-item-coin-gold,
+.nimble-print-friendly .nimble-item-coin-silver,
+.nimble-print-friendly .nimble-item-coin-copper {
+	color: #1a1a1a;
+}
+
+.nimble-print-friendly .nimble-statblock__name {
+	color: #1a1a1a;
+}
+
+.nimble-print-friendly .nimble-statblock__meta {
+	color: #555555;
+}
+
+.nimble-print-friendly .nimble-statblock__text,
+.nimble-print-friendly .nimble-statblock__action-text,
+.nimble-print-friendly .nimble-statblock__action-name,
+.nimble-print-friendly .nimble-statblock__feature-name,
+.nimble-print-friendly .nimble-statblock__feature-text {
+	color: #1a1a1a;
+}
+
+.nimble-print-friendly .nimble-statblock__item-entry-name-text,
+.nimble-print-friendly .nimble-statblock__item-entry-action,
+.nimble-print-friendly .nimble-statblock__item-entry-text {
+	color: #1a1a1a;
+}
+
+.nimble-print-friendly .nimble-statblock::before {
+	background:
+		linear-gradient(#1a1a1a 0 0)
+			calc(var(--nimble-corner)) 0
+			/ calc(100% - (var(--nimble-corner) * 2)) var(--nimble-border-width) no-repeat,
+		linear-gradient(#1a1a1a 0 0)
+			calc(var(--nimble-corner)) 100%
+			/ calc(100% - (var(--nimble-corner) * 2)) var(--nimble-border-width) no-repeat,
+		linear-gradient(#1a1a1a 0 0)
+			0 calc(var(--nimble-corner))
+			/ var(--nimble-border-width) calc(100% - (var(--nimble-corner) * 2)) no-repeat,
+		linear-gradient(#1a1a1a 0 0)
+			100% calc(var(--nimble-corner))
+			/ var(--nimble-border-width) calc(100% - (var(--nimble-corner) * 2)) no-repeat,
+		radial-gradient(
+			circle at 0 0,
+			transparent calc(var(--nimble-corner) - var(--nimble-border-width)),
+			#1a1a1a calc(var(--nimble-corner) - var(--nimble-border-width)) var(--nimble-corner),
+			transparent var(--nimble-corner)
+		)
+			0 0 / var(--nimble-corner) var(--nimble-corner) no-repeat,
+		radial-gradient(
+			circle at 100% 0,
+			transparent calc(var(--nimble-corner) - var(--nimble-border-width)),
+			#1a1a1a calc(var(--nimble-corner) - var(--nimble-border-width)) var(--nimble-corner),
+			transparent var(--nimble-corner)
+		)
+			100% 0 / var(--nimble-corner) var(--nimble-corner) no-repeat,
+		radial-gradient(
+			circle at 100% 100%,
+			transparent calc(var(--nimble-corner) - var(--nimble-border-width)),
+			#1a1a1a calc(var(--nimble-corner) - var(--nimble-border-width)) var(--nimble-corner),
+			transparent var(--nimble-corner)
+		)
+			100% 100% / var(--nimble-corner) var(--nimble-corner) no-repeat,
+		radial-gradient(
+			circle at 0 100%,
+			transparent calc(var(--nimble-corner) - var(--nimble-border-width)),
+			#1a1a1a calc(var(--nimble-corner) - var(--nimble-border-width)) var(--nimble-corner),
+			transparent var(--nimble-corner)
+		)
+			0 100% / var(--nimble-corner) var(--nimble-corner) no-repeat;
 }
