@@ -89,6 +89,8 @@
 
 .nimble-layout-item {
 	--nimble-accent: color-mix(in srgb, #9b59b6 50%, var(--text-accent));
+	min-width: 0;
+	max-width: 100%;
 }
 
 .nimble-layout-item .nimble-statblock__item-entries {
@@ -712,6 +714,7 @@
 	margin-top: 0.1rem;
 	padding-top: 0.35rem;
 	border-top: 1px solid var(--nimble-rule);
+	overflow-wrap: break-word;
 }
 
 .nimble-statblock__item-entries {
@@ -727,6 +730,7 @@
 	font-size: 1.28rem;
 	line-height: 1.22;
 	gap: 0.3rem;
+	min-width: 0;
 }
 
 .nimble-statblock__item-entry-name {
@@ -752,6 +756,8 @@
 .nimble-statblock__item-entry-text {
 	font-style: italic;
 	font-weight: 500;
+	min-width: 0;
+	overflow-wrap: break-word;
 }
 
 .nimble-rarity-uncommon {
