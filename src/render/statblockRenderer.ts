@@ -1225,7 +1225,7 @@ export function renderItemStatblock(
 	const hostEl = containerEl.createDiv({ cls: "nimble-statblock-host" });
 	const controlsEl = hostEl.createDiv({ cls: "nimble-statblock-controls" });
 	const statblockEl = hostEl.createDiv({
-		cls: ["nimble-statblock", "nimble-layout-item"],
+		cls: ["nimble-statblock", "nimble-layout-item", RARITY_COLOR_CLASSES[statblock.rarity]],
 	});
 
 	renderItemHeader(app, statblock, statblockEl, sourcePath);

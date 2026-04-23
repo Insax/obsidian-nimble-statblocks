@@ -3,6 +3,7 @@
 	flex-direction: column;
 	gap: 0.55rem;
 	margin-block: 1rem;
+	align-items: center;
 }
 
 .nimble-statblock-controls {
@@ -88,11 +89,39 @@
 }
 
 .nimble-statblock.nimble-layout-item {
-	--nimble-accent: color-mix(in srgb, #9b59b6 50%, var(--text-accent));
+	--nimble-accent: #9b59b6;
+	--nimble-border: #9b59b6;
+	color: var(--text-normal);
 	display: inline-grid;
 	grid-template-columns: max-content;
 	min-width: 0;
+	width: fit-content;
 	max-width: 100%;
+}
+
+.nimble-statblock.nimble-layout-item.nimble-rarity-uncommon {
+	--nimble-border: #888888;
+	--nimble-accent: #888888;
+}
+
+.nimble-statblock.nimble-layout-item.nimble-rarity-rare {
+	--nimble-border: #3498db;
+	--nimble-accent: #3498db;
+}
+
+.nimble-statblock.nimble-layout-item.nimble-rarity-very-rare {
+	--nimble-border: #8e44ad;
+	--nimble-accent: #8e44ad;
+}
+
+.nimble-statblock.nimble-layout-item.nimble-rarity-legendary {
+	--nimble-border: #e67e22;
+	--nimble-accent: #e67e22;
+}
+
+.nimble-statblock.nimble-layout-item.nimble-rarity-mythical {
+	--nimble-border: #c0392b;
+	--nimble-accent: #c0392b;
 }
 
 .nimble-statblock.nimble-layout-item .nimble-statblock__item-entries {
@@ -784,7 +813,7 @@
 }
 
 .nimble-rarity-very-rare {
-	color: #2471a3;
+	color: #8e44ad;
 }
 
 .nimble-rarity-legendary {
@@ -866,7 +895,7 @@
 	color: #1a1a1a;
 }
 
-.nimble-print-friendly .nimble-statblock__name {
+.nimble-print-friendly .nimble-statblock__name:not([class*="nimble-rarity-"]) {
 	color: #1a1a1a;
 }
 
