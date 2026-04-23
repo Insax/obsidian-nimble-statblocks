@@ -1236,7 +1236,6 @@ export function renderItemStatblock(
 		renderItemFlavor(statblock.flavor, statblockEl);
 	}
 
-	limitItemWidth(statblockEl);
 	renderItemExportButton(controlsEl, statblock, statblockEl);
 }
 
@@ -1457,41 +1456,3 @@ async function handleItemPrintFriendlyPngExport(
 	}
 }
 
-function limitItemWidth(statblockEl: HTMLElement): void {
-	requestAnimationFrame(() => {
-		const headerEl = statblockEl.querySelector(".nimble-statblock__item-header");
-		const titleRowEl = statblockEl.querySelector(".nimble-statblock__item-header-title-row");
-		if (!(headerEl instanceof HTMLElement) || !(titleRowEl instanceof HTMLElement)) {
-			return;
-		}
-
-		const titleWidth = Array.from(titleRowEl.children).reduce(
-			(maxWidth, child) =>
-				child instanceof HTMLElement
-					? Math.max(maxWidth, child.scrollWidth)
-					: maxWidth,
-			0,
-		);
-		if (titleWidth === 0) {
-			return;
-		}
-
-		const imageBoxEl = headerEl.querySelector(".nimble-statblock__item-image-box");
-		const imageWidth = imageBoxEl instanceof HTMLElement ? imageBoxEl.offsetWidth : 0;
-		const headerStyle = window.getComputedStyle(headerEl);
-		const headerGap = imageWidth > 0 ? parseFloat(headerStyle.columnGap || headerStyle.gap) || 0 : 0;
-		const contentWidth = Math.ceil(imageWidth + headerGap + titleWidth);
-		const constrainedWidth = `${contentWidth}px`;
-
-		statblockEl.style.width = constrainedWidth;
-
-		const widthConstrainedElements = Array.from(statblockEl.querySelectorAll(
-			".nimble-statblock__item-entry, .nimble-statblock__item-entries, .nimble-statblock__item-flavor",
-		));
-		for (const element of widthConstrainedElements) {
-			if (element instanceof HTMLElement) {
-				element.style.maxWidth = constrainedWidth;
-			}
-		}
-	});
-}
