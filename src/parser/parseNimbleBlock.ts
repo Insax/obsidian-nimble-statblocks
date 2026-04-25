@@ -264,12 +264,22 @@ function parseItemPrice(value: unknown): ItemPrice | undefined {
 		return undefined;
 	}
 
+	if (
+		typeof value === "number" ||
+		typeof value === "boolean"
+	) {
+		return { value: String(value), currency: "gp" };
+	}
+
 	if (typeof value === "string") {
-		return { value, currency: "gp" };
+		const trimmedValue = value.trim();
+		return trimmedValue ? { value: trimmedValue, currency: "gp" } : undefined;
 	}
 
 	if (isRecord(value)) {
-		const priceValue = asTrimmedString(value.value ?? value.amount);
+		const rawPriceValue = asNumberOrString(value.value ?? value.amount);
+		const priceValue =
+			typeof rawPriceValue === "string" ? rawPriceValue.trim() : String(rawPriceValue);
 		if (!priceValue) {
 			return undefined;
 		}

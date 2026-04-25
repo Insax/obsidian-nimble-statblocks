@@ -100,8 +100,8 @@
 }
 
 .nimble-statblock.nimble-layout-item.nimble-rarity-uncommon {
-	--nimble-border: #888888;
-	--nimble-accent: #888888;
+	--nimble-border: #1eff00;
+	--nimble-accent: #1eff00;
 }
 
 .nimble-statblock.nimble-layout-item.nimble-rarity-rare {
@@ -805,7 +805,7 @@
 }
 
 .nimble-rarity-uncommon {
-	color: #888888;
+	color: #1eff00;
 }
 
 .nimble-rarity-rare {
@@ -880,6 +880,41 @@
 	--nimble-badge-border: #1a1a1a;
 }
 
+.nimble-print-friendly.nimble-layout-item.nimble-rarity-uncommon {
+	--nimble-border: #1eff00;
+	--nimble-accent: #1eff00;
+	--nimble-image-border: #1eff00;
+	--nimble-rule: #1eff00;
+}
+
+.nimble-print-friendly.nimble-layout-item.nimble-rarity-rare {
+	--nimble-border: #3498db;
+	--nimble-accent: #3498db;
+	--nimble-image-border: #3498db;
+	--nimble-rule: #3498db;
+}
+
+.nimble-print-friendly.nimble-layout-item.nimble-rarity-very-rare {
+	--nimble-border: #8e44ad;
+	--nimble-accent: #8e44ad;
+	--nimble-image-border: #8e44ad;
+	--nimble-rule: #8e44ad;
+}
+
+.nimble-print-friendly.nimble-layout-item.nimble-rarity-legendary {
+	--nimble-border: #e67e22;
+	--nimble-accent: #e67e22;
+	--nimble-image-border: #e67e22;
+	--nimble-rule: #e67e22;
+}
+
+.nimble-print-friendly.nimble-layout-item.nimble-rarity-mythical {
+	--nimble-border: #c0392b;
+	--nimble-accent: #c0392b;
+	--nimble-image-border: #c0392b;
+	--nimble-rule: #c0392b;
+}
+
 .nimble-print-friendly .nimble-statblock__image,
 .nimble-print-friendly .nimble-item-header-image {
 	display: none;
@@ -919,43 +954,43 @@
 
 .nimble-print-friendly .nimble-statblock::before {
 	background:
-		linear-gradient(#1a1a1a 0 0)
+		linear-gradient(var(--nimble-border) 0 0)
 			calc(var(--nimble-corner)) 0
 			/ calc(100% - (var(--nimble-corner) * 2)) var(--nimble-border-width) no-repeat,
-		linear-gradient(#1a1a1a 0 0)
+		linear-gradient(var(--nimble-border) 0 0)
 			calc(var(--nimble-corner)) 100%
 			/ calc(100% - (var(--nimble-corner) * 2)) var(--nimble-border-width) no-repeat,
-		linear-gradient(#1a1a1a 0 0)
+		linear-gradient(var(--nimble-border) 0 0)
 			0 calc(var(--nimble-corner))
 			/ var(--nimble-border-width) calc(100% - (var(--nimble-corner) * 2)) no-repeat,
-		linear-gradient(#1a1a1a 0 0)
+		linear-gradient(var(--nimble-border) 0 0)
 			100% calc(var(--nimble-corner))
 			/ var(--nimble-border-width) calc(100% - (var(--nimble-corner) * 2)) no-repeat,
 		radial-gradient(
 			circle at 0 0,
 			transparent calc(var(--nimble-corner) - var(--nimble-border-width)),
-			#1a1a1a calc(var(--nimble-corner) - var(--nimble-border-width)) var(--nimble-corner),
+			var(--nimble-border) calc(var(--nimble-corner) - var(--nimble-border-width)) var(--nimble-corner),
 			transparent var(--nimble-corner)
 		)
 			0 0 / var(--nimble-corner) var(--nimble-corner) no-repeat,
 		radial-gradient(
 			circle at 100% 0,
 			transparent calc(var(--nimble-corner) - var(--nimble-border-width)),
-			#1a1a1a calc(var(--nimble-corner) - var(--nimble-border-width)) var(--nimble-corner),
+			var(--nimble-border) calc(var(--nimble-corner) - var(--nimble-border-width)) var(--nimble-corner),
 			transparent var(--nimble-corner)
 		)
 			100% 0 / var(--nimble-corner) var(--nimble-corner) no-repeat,
 		radial-gradient(
 			circle at 100% 100%,
 			transparent calc(var(--nimble-corner) - var(--nimble-border-width)),
-			#1a1a1a calc(var(--nimble-corner) - var(--nimble-border-width)) var(--nimble-corner),
+			var(--nimble-border) calc(var(--nimble-corner) - var(--nimble-border-width)) var(--nimble-corner),
 			transparent var(--nimble-corner)
 		)
 			100% 100% / var(--nimble-corner) var(--nimble-corner) no-repeat,
 		radial-gradient(
 			circle at 0 100%,
 			transparent calc(var(--nimble-corner) - var(--nimble-border-width)),
-			#1a1a1a calc(var(--nimble-corner) - var(--nimble-border-width)) var(--nimble-corner),
+			var(--nimble-border) calc(var(--nimble-corner) - var(--nimble-border-width)) var(--nimble-corner),
 			transparent var(--nimble-corner)
 		)
 			0 100% / var(--nimble-corner) var(--nimble-corner) no-repeat;
