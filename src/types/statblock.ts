@@ -93,6 +93,7 @@ export interface ItemEntry {
 	name: string;
 	activation?: string;
 	limit?: string;
+	recharge?: string;
 	desc: AbilityDescLine[];
 }
 
@@ -106,6 +107,7 @@ export interface ItemStatblock {
 	layout: "item";
 	rarity: ItemRarity;
 	itemType: string;
+	charges?: string;
 	requirement?: ItemRequirement;
 	price?: ItemPrice;
 	image?: string;

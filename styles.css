@@ -92,10 +92,10 @@
 	--nimble-accent: #9b59b6;
 	--nimble-border: #9b59b6;
 	color: var(--text-normal);
-	display: inline-grid;
-	grid-template-columns: max-content;
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
 	min-width: 0;
-	width: fit-content;
 	max-width: 100%;
 }
 
@@ -171,6 +171,25 @@
 	gap: 0.35rem;
 	font-size: 1.2rem;
 	font-weight: 600;
+}
+
+.nimble-statblock__item-charges {
+	display: flex;
+	align-items: baseline;
+	gap: 0;
+	font-size: 1.28rem;
+	line-height: 1.22;
+	width: 100%;
+}
+
+.nimble-statblock__item-charge-gap {
+	display: inline-block;
+	margin-left: 0.35em;
+	width: 1.4em;
+	min-width: 1.4em;
+	height: 0.9em;
+	border-bottom: 1px solid color-mix(in srgb, var(--nimble-meta) 70%, transparent);
+	transform: translateY(-0.03em);
 }
 
 .nimble-item-coin-gold,
@@ -749,9 +768,7 @@
 	margin-top: 0.1rem;
 	padding-top: 0.35rem;
 	border-top: 1px solid var(--nimble-rule);
-	width: 0;
-	min-width: 100%;
-	max-width: 100%;
+	width: 100%;
 	overflow-wrap: break-word;
 }
 
@@ -759,26 +776,32 @@
 	display: flex;
 	flex-direction: column;
 	gap: 0.28rem;
-	width: 0;
-	min-width: 100%;
-	max-width: 100%;
+	width: 100%;
 }
 
 .nimble-statblock__item-entry {
 	display: flex;
-	flex-wrap: wrap;
-	align-items: baseline;
+	flex-direction: column;
+	gap: 0.14rem;
 	font-size: 1.28rem;
 	line-height: 1.22;
-	gap: 0.3rem;
-	width: 0;
-	min-width: 100%;
-	max-width: 100%;
+	width: 100%;
+}
+
+.nimble-statblock__item-entry-main {
+	display: grid;
+	grid-template-columns: max-content minmax(0, 1fr);
+	column-gap: 0.3rem;
+	align-items: baseline;
+}
+
+.nimble-statblock__item-entry-prefix {
+	display: inline;
+	grid-column: 1;
 }
 
 .nimble-statblock__item-entry-name {
-	display: flex;
-	align-items: baseline;
+	display: inline;
 }
 
 .nimble-statblock__item-entry-name-text {
@@ -797,11 +820,26 @@
 }
 
 .nimble-statblock__item-entry-text {
-	flex: 1 1 0;
+	display: block;
+	grid-column: 2;
 	font-style: italic;
 	font-weight: 500;
-	min-width: 0;
 	overflow-wrap: break-word;
+}
+
+.nimble-statblock__item-entry-recharge {
+	margin-top: 0.24rem;
+	padding-left: 0.2rem;
+	font-style: italic;
+	color: var(--nimble-meta);
+}
+
+.nimble-statblock__item-entry-recharge-label {
+	font-weight: 700;
+}
+
+.nimble-statblock__item-entry-recharge-text {
+	font-weight: 500;
 }
 
 .nimble-rarity-uncommon {
@@ -924,18 +962,16 @@
 	display: none;
 }
 
-.nimble-print-friendly .nimble-item-coin-gold,
-.nimble-print-friendly .nimble-item-coin-silver,
-.nimble-print-friendly .nimble-item-coin-copper {
-	color: #1a1a1a;
-}
-
 .nimble-print-friendly .nimble-statblock__name:not([class*="nimble-rarity-"]) {
 	color: #1a1a1a;
 }
 
 .nimble-print-friendly .nimble-statblock__meta {
 	color: #555555;
+}
+
+.nimble-print-friendly .nimble-statblock__item-header-price {
+	color: #1a1a1a;
 }
 
 .nimble-print-friendly .nimble-statblock__text,
@@ -948,7 +984,12 @@
 
 .nimble-print-friendly .nimble-statblock__item-entry-name-text,
 .nimble-print-friendly .nimble-statblock__item-entry-action,
-.nimble-print-friendly .nimble-statblock__item-entry-text {
+.nimble-print-friendly .nimble-statblock__item-entry-text,
+.nimble-print-friendly .nimble-statblock__item-charges,
+.nimble-print-friendly .nimble-statblock__item-charge-gap,
+.nimble-print-friendly .nimble-statblock__item-entry-recharge,
+.nimble-print-friendly .nimble-statblock__item-entry-recharge-label,
+.nimble-print-friendly .nimble-statblock__item-entry-recharge-text {
 	color: #1a1a1a;
 }
 

@@ -47,6 +47,11 @@ interface MovementBadgeDisplay {
 	ariaValue: string;
 }
 
+interface ItemHeaderLayoutMetrics {
+	headerEl: HTMLElement;
+	imageEl?: HTMLImageElement;
+}
+
 const MOVEMENT_BADGE_ORDER: MovementType[] = [
 	"walk",
 	"fly",
@@ -1228,7 +1233,8 @@ export function renderItemStatblock(
 		cls: ["nimble-statblock", "nimble-layout-item", RARITY_COLOR_CLASSES[statblock.rarity]],
 	});
 
-	renderItemHeader(app, statblock, statblockEl, sourcePath);
+	const headerMetrics = renderItemHeader(app, statblock, statblockEl, sourcePath);
+	renderItemCharges(statblock, statblockEl);
 	renderItemRequirement(statblock, statblockEl);
 	renderItemEntries(statblock.entries, statblockEl);
 
@@ -1236,6 +1242,7 @@ export function renderItemStatblock(
 		renderItemFlavor(statblock.flavor, statblockEl);
 	}
 
+	scheduleItemCardWidth(statblockEl, headerMetrics);
 	renderItemExportButton(controlsEl, statblock, statblockEl);
 }
 
@@ -1268,15 +1275,16 @@ function renderItemHeader(
 	statblock: ItemStatblock,
 	containerEl: HTMLElement,
 	sourcePath: string,
-): void {
+): ItemHeaderLayoutMetrics {
 	const headerEl = containerEl.createDiv({ cls: "nimble-statblock__item-header" });
 
 	const imageFile = statblock.image ? resolveLinkedFile(app, sourcePath, statblock.image) : null;
 	const hasImage = !!imageFile;
+	let imageEl: HTMLImageElement | undefined;
 
 	if (hasImage && imageFile) {
 		const imageBoxEl = headerEl.createDiv({ cls: "nimble-statblock__item-image-box" });
-		imageBoxEl.createEl("img", {
+		imageEl = imageBoxEl.createEl("img", {
 			cls: "nimble-statblock__image",
 			attr: { src: app.vault.getResourcePath(imageFile), alt: `${statblock.name} art` },
 		});
@@ -1308,6 +1316,42 @@ function renderItemHeader(
 		setIcon(coinEl, "coins");
 		priceEl.createSpan({ text: ` ${statblock.price.value}` });
 	}
+
+	return { headerEl, imageEl };
+}
+
+function scheduleItemCardWidth(
+	statblockEl: HTMLElement,
+	headerMetrics: ItemHeaderLayoutMetrics,
+): void {
+	const updateWidth = (): void => {
+		applyItemCardWidth(statblockEl, headerMetrics.headerEl);
+	};
+
+	window.requestAnimationFrame(() => {
+		updateWidth();
+		window.requestAnimationFrame(updateWidth);
+	});
+
+	if (document.fonts) {
+		void document.fonts.ready.then(updateWidth);
+	}
+
+	if (headerMetrics.imageEl && !headerMetrics.imageEl.complete) {
+		headerMetrics.imageEl.addEventListener("load", updateWidth, { once: true });
+		headerMetrics.imageEl.addEventListener("error", updateWidth, { once: true });
+	}
+}
+
+function applyItemCardWidth(
+	statblockEl: HTMLElement,
+	headerEl: HTMLElement,
+): void {
+	const headerWidth = Math.max(headerEl.scrollWidth, Math.ceil(headerEl.getBoundingClientRect().width));
+	const targetWidth = Math.ceil(headerWidth * 1.5);
+	if (targetWidth > 0) {
+		statblockEl.style.width = `${targetWidth}px`;
+	}
 }
 
 function renderItemRequirement(
@@ -1320,22 +1364,44 @@ function renderItemRequirement(
 
 	const reqEl = containerEl.createDiv({ cls: "nimble-statblock__item-entry" });
 
-	const nameEl = reqEl.createEl("span", { cls: "nimble-statblock__item-entry-name" });
-	nameEl.createSpan({
+	const prefixEl = reqEl.createEl("span", { cls: "nimble-statblock__item-entry-prefix" });
+	const nameEl = prefixEl.createEl("span", { cls: "nimble-statblock__item-entry-name" });
+	nameEl.createEl("span", {
 		cls: "nimble-statblock__item-entry-name-text",
 		text: "Requirement",
 	});
 	nameEl.createSpan({ text: ":" });
 
 	if (statblock.requirement.name) {
-		reqEl.createSpan({ text: " " });
-		reqEl.createSpan({ cls: "nimble-statblock__item-entry-action", text: statblock.requirement.name });
+		prefixEl.createSpan({ text: " " });
+		prefixEl.createSpan({
+			cls: "nimble-statblock__item-entry-action",
+			text: statblock.requirement.name,
+		});
 	}
 
 	const detailText = descLinesToSentence(statblock.requirement.desc);
 	if (detailText) {
 		reqEl.createSpan({ cls: "nimble-statblock__item-entry-text", text: ` ${detailText}` });
 	}
+}
+
+function renderItemCharges(
+	statblock: ItemStatblock,
+	containerEl: HTMLElement,
+): void {
+	if (!statblock.charges) {
+		return;
+	}
+
+	const chargesEl = containerEl.createDiv({ cls: "nimble-statblock__item-charges" });
+	chargesEl.createEl("span", {
+		cls: "nimble-statblock__item-entry-name-text",
+		text: "Charges",
+	});
+	chargesEl.createSpan({ text: ":" });
+	chargesEl.createSpan({ cls: "nimble-statblock__item-charge-gap" });
+	chargesEl.createSpan({ text: ` / ${statblock.charges}` });
 }
 
 function renderItemEntries(
@@ -1350,8 +1416,12 @@ function renderItemEntries(
 
 	for (const entry of entries) {
 		const entryEl = entriesEl.createDiv({ cls: "nimble-statblock__item-entry" });
+		const mainRowEl = entryEl.createDiv({ cls: "nimble-statblock__item-entry-main" });
 
-		const nameEl = entryEl.createEl("span", {
+		const prefixEl = mainRowEl.createEl("span", {
+			cls: "nimble-statblock__item-entry-prefix",
+		});
+		const nameEl = prefixEl.createEl("span", {
 			cls: "nimble-statblock__item-entry-name",
 		});
 		nameEl.createEl("span", {
@@ -1361,7 +1431,7 @@ function renderItemEntries(
 		nameEl.createSpan({ text: ":" });
 
 		if (entry.activation || entry.limit) {
-			const metaEl = entryEl.createSpan({ cls: "nimble-statblock__item-entry-meta" });
+			const metaEl = prefixEl.createSpan({ cls: "nimble-statblock__item-entry-meta" });
 			metaEl.createSpan({ text: " (" });
 			if (entry.activation) {
 				metaEl.createSpan({ cls: "nimble-statblock__item-entry-action", text: entry.activation });
@@ -1377,9 +1447,22 @@ function renderItemEntries(
 
 		const detailText = descLinesToSentence(entry.desc);
 		if (detailText) {
-			entryEl.createSpan({
+			mainRowEl.createSpan({
 				cls: "nimble-statblock__item-entry-text",
 				text: ` ${detailText}`,
+			});
+		}
+
+		if (entry.recharge) {
+			const rechargeEl = entryEl.createDiv({ cls: "nimble-statblock__item-entry-recharge" });
+			rechargeEl.createSpan({
+				cls: "nimble-statblock__item-entry-recharge-label",
+				text: "Recharge",
+			});
+			rechargeEl.createSpan({ text: ":" });
+			rechargeEl.createSpan({
+				cls: "nimble-statblock__item-entry-recharge-text",
+				text: ` ${entry.recharge}`,
 			});
 		}
 	}

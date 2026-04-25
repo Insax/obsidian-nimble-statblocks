@@ -201,6 +201,7 @@ function parseItemBlock(source: Record<string, unknown>): ParseResult {
 		source.type ?? source.item_type ?? source.itemType ?? "Unknown",
 	) ?? "Unknown";
 	const price = parseItemPrice(source.price ?? source.cost);
+	const charges = parseItemCharges(source.charges ?? source.maxCharges ?? source.max_charges);
 	const image = asOptionalLinkString(source.image);
 	const flavor = asOptionalString(source.flavor ?? source.flavor_text ?? source.flavorText);
 	const entries = parseItemEntries(source.entries ?? source.effects ?? source.abilities);
@@ -222,6 +223,9 @@ function parseItemBlock(source: Record<string, unknown>): ParseResult {
 	}
 	if (price) {
 		itemStatblock.price = price;
+	}
+	if (charges) {
+		itemStatblock.charges = charges;
 	}
 	if (image) {
 		itemStatblock.image = image;
@@ -297,6 +301,15 @@ function parseItemPrice(value: unknown): ItemPrice | undefined {
 	return undefined;
 }
 
+function parseItemCharges(value: unknown): string | undefined {
+	if (typeof value === "number") {
+		const normalized = String(value).trim();
+		return normalized.length > 0 ? normalized : undefined;
+	}
+
+	return asOptionalString(value);
+}
+
 function parseRarity(value: unknown): ItemRarity {
 	if (typeof value !== "string") {
 		return "uncommon";
@@ -337,9 +350,14 @@ function parseItemEntries(value: unknown): ItemEntry[] {
 			entry.activation = activation;
 		}
 
-		const limit = asOptionalString(item.limit ?? item.uses ?? item.recharge);
+		const limit = asOptionalString(item.limit ?? item.uses);
 		if (limit) {
 			entry.limit = limit;
+		}
+
+		const recharge = asOptionalString(item.recharge);
+		if (recharge) {
+			entry.recharge = recharge;
 		}
 
 		entries.push(entry);
